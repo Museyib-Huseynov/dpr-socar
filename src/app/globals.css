@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+
+.box {
+  @apply w-56 h-56 text-xl text-white tracking-widest font-bold rounded-lg grid place-items-center active:scale-95 transition-all duration-200 cursor-pointer;
+}
