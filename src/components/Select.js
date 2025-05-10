@@ -15,57 +15,79 @@ const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
+      width: 200,
       marginLeft: '-16px',
     },
   },
 };
 
-const names = [
-  'Oliver Hansen',
-  'Van Henry',
-  'April Tucker',
-  'Ralph Hubbard',
-  'Omar Alexander',
-  'Carlos Abbott',
-  'Miriam Wagner',
-  'Bradley Wilkerson',
-  'Virginia Andrews',
-  'Kelly Snyder',
-];
-
-export default function MultipleSelectCheckmarks({ placeholder }) {
-  const [personName, setPersonName] = React.useState([]);
+export default function MultipleSelectCheckmarks({
+  placeholder,
+  data,
+  selected,
+  setSelected,
+  disabled = false,
+  multiple = true,
+}) {
+  const isAllSelected =
+    multiple && data.length > 0 && selected.length === data.length;
 
   const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value
-    );
+    const value = event.target.value;
+
+    if (multiple) {
+      if (value.includes('All')) {
+        if (isAllSelected) {
+          setSelected([]);
+        } else {
+          setSelected(data);
+        }
+      } else {
+        setSelected(value);
+      }
+    } else {
+      setSelected(value);
+    }
   };
 
   return (
-    <div className='w-[250px] h-[50px]'>
-      <FormControl sx={{ m: 0, width: 250 }}>
-        <InputLabel id='demo-multiple-checkbox-label'>{placeholder}</InputLabel>
+    <div className='w-[200px] h-[50px]'>
+      <FormControl sx={{ m: 0, width: 200 }}>
+        <InputLabel id='custom-select-label'>{placeholder}</InputLabel>
         <Select
-          labelId='demo-multiple-checkbox-label'
-          id='demo-multiple-checkbox'
-          multiple
-          value={personName}
+          labelId='custom-select-label'
+          id='custom-select'
+          multiple={multiple}
+          value={multiple ? selected : data.includes(selected) ? selected : ''}
           onChange={handleChange}
           input={<OutlinedInput label={placeholder} />}
-          renderValue={(selected) => selected.join(', ')}
+          renderValue={multiple ? (selected) => selected.join(', ') : undefined}
           MenuProps={MenuProps}
           sx={{ height: 50 }}
+          disabled={disabled}
         >
-          {names.map((name) => (
+          {multiple && (
+            <MenuItem value='All'>
+              <Checkbox
+                checked={isAllSelected}
+                indeterminate={
+                  selected.length > 0 && selected.length < data.length
+                }
+              />
+              <ListItemText primary='All' />
+            </MenuItem>
+          )}
+
+          {data.map((name) => (
             <MenuItem key={name} value={name}>
-              <Checkbox checked={personName.includes(name)} />
-              <ListItemText primary={name} />
+              {multiple ? (
+                <>
+                  <Checkbox checked={selected.includes(name)} />
+                  <ListItemText primary={name} />
+                </>
+              ) : (
+                <ListItemText primary={name} />
+              )}
             </MenuItem>
           ))}
         </Select>
