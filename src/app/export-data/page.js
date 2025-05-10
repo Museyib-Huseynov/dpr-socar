@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Select from '@/components/Select';
 
 export default function ExportPage() {
@@ -13,6 +13,33 @@ export default function ExportPage() {
   const [selectedField, setSelectedField] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
   const [selectedWells, setSelectedWells] = useState([]);
+
+  const filteredFields = fields.filter((i) => {
+    let selectedOGPDId = OGPDs.find((j) => selectedOGPD === j.name)?.id;
+    return selectedOGPDId === i.ogpd_id;
+  });
+
+  const filteredPlatforms = platforms.filter((i) => {
+    let selectedFieldId = fields.find((j) => selectedField === j.name)?.id;
+    return selectedFieldId === i.field_id;
+  });
+
+  const sortedPlatforms = useMemo(() => {
+    return filteredPlatforms
+      .map((l) => (l.square ? `${l.name} / ${l.square}` : l.name))
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  }, [filteredPlatforms]);
+
+  const filteredWells = wells.filter((i) => {
+    let selectedPlatformIds = platforms
+      .filter((j) =>
+        selectedPlatforms.includes(
+          j.square ? j.name + ' / ' + j.square : j.name
+        )
+      )
+      .map((k) => k.id);
+    return selectedPlatformIds.includes(i.platform_id);
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,27 +81,6 @@ export default function ExportPage() {
     setSelectedWells(newSelectedWells);
   }, [selectedPlatforms]);
 
-  const filteredFields = fields.filter((i) => {
-    let selectedOGPDId = OGPDs.find((j) => selectedOGPD === j.name)?.id;
-    return selectedOGPDId === i.ogpd_id;
-  });
-
-  const filteredPlatforms = platforms.filter((i) => {
-    let selectedFieldId = fields.find((j) => selectedField === j.name)?.id;
-    return selectedFieldId === i.field_id;
-  });
-
-  const filteredWells = wells.filter((i) => {
-    let selectedPlatformIds = platforms
-      .filter((j) =>
-        selectedPlatforms.includes(
-          j.square ? j.name + ' / ' + j.square : j.name
-        )
-      )
-      .map((k) => k.id);
-    return selectedPlatformIds.includes(i.platform_id);
-  });
-
   return (
     <div className='h-[100px]'>
       <Select
@@ -94,15 +100,7 @@ export default function ExportPage() {
       />
       <Select
         placeholder='Özül / mədən'
-        data={filteredPlatforms
-          .map((l) => {
-            if (l.square) {
-              return l.name + ' / ' + l.square;
-            } else {
-              return l.name;
-            }
-          })
-          .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))}
+        data={sortedPlatforms}
         selected={selectedPlatforms}
         setSelected={setSelectedPlatforms}
         disabled={selectedField === ''}
