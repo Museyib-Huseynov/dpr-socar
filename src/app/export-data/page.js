@@ -141,6 +141,7 @@ export default function ExportPage() {
     setSelectedDataToDownload([]);
     setFromDate(null);
     setToDate(null);
+    setDownloadedData([]);
   }, [selectedOGPD]);
 
   useEffect(() => {
@@ -149,6 +150,7 @@ export default function ExportPage() {
     setSelectedDataToDownload([]);
     setFromDate(null);
     setToDate(null);
+    setDownloadedData([]);
   }, [selectedField]);
 
   useEffect(() => {
@@ -160,12 +162,14 @@ export default function ExportPage() {
     setSelectedDataToDownload([]);
     setFromDate(null);
     setToDate(null);
+    setDownloadedData([]);
   }, [selectedPlatforms]);
 
   useEffect(() => {
     setSelectedDataToDownload([]);
     setFromDate(null);
     setToDate(null);
+    setDownloadedData([]);
   }, [selectedWells]);
 
   return (
