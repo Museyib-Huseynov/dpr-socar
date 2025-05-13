@@ -2,13 +2,15 @@ import { getPool } from '@/util/db';
 
 export async function GET(request, { params }) {
   const { well_id, downloaded_data, fromDate, toDate } = await params;
-  console.log('parms', params);
 
   let query = `
     SELECT
-      rd.report_date AS Tarix,
+      CONVERT(VARCHAR(10), rd.report_date, 120) AS Tarix,
       f.name AS Yataq,
-      COALESCE(p.name, '') +' / ' + COALESCE(p.square, '') AS "Özül / Mədən",
+      CASE
+        WHEN p.square IS NULL OR p.square = '' THEN p.name
+        ELSE p.name + ' / ' + p.square
+      END AS "Özül / Mədən",
       w.name AS Quyu,
       wsc.name "Quyu fondu",
       pwssc.name AS "İstismar fond alt kat",
@@ -102,7 +104,9 @@ export async function GET(request, { params }) {
     LEFT JOIN production_sub_skins_activities AS pssa
         ON wdr.production_sub_skins_activity_id = pssa.id
 
-    WHERE w.id IN (${well_id}) AND rd.report_date >= '${fromDate}' AND rd.report_date <= '${toDate}';
+    WHERE w.id IN (${well_id}) AND rd.report_date >= '${fromDate}' AND rd.report_date <= '${toDate}'
+
+    ORDER BY f.name, rd.report_date;
   `;
 
   if (downloaded_data.includes(1)) {
@@ -134,25 +138,6 @@ export async function GET(request, { params }) {
           WHEN h.oil_density = 0 AND lr.water_cut = 0 THEN 0
           ELSE ROUND(wt.liquid_ton * h.oil_density * (1 - (lr.water_cut / 100)) / (h.oil_density * (1 - (lr.water_cut / 100)) + (lr.water_cut / 100)), 0)
       END AS "Neft (ton) - ölçü",
-      (SELECT mr.produced_oil / (DAY(rd_sub.report_date))
-        FROM monthly_reported mr
-        INNER JOIN report_dates rd_sub ON mr.report_date_id = rd_sub.id
-        WHERE mr.field_id = f.id
-        AND rd_sub.report_date = EOMONTH(rd.report_date)) * 
-      CASE
-          WHEN f.name <> N'Günəşli' THEN ISNULL(wt.oil_ton, 0)
-          WHEN h.oil_density = 0 AND lr.water_cut = 0 THEN 0
-          ELSE ROUND(wt.liquid_ton * h.oil_density * (1 - (lr.water_cut / 100)) / (h.oil_density * (1 - (lr.water_cut / 100)) + (lr.water_cut / 100)), 0)
-      END
-      /
-      NULLIF(
-        SUM(
-          CASE
-              WHEN f.name <> N'Günəşli' THEN ISNULL(wt.oil_ton, 0)
-              WHEN h.oil_density = 0 AND lr.water_cut = 0 THEN 0
-              ELSE ROUND(wt.liquid_ton * h.oil_density * (1 - (lr.water_cut / 100)) / (h.oil_density * (1 - (lr.water_cut / 100)) + (lr.water_cut / 100)), 0)
-          END
-        ) OVER (PARTITION BY f.id, rd.report_date), 0) AS "Neft (ton) - paylanılmış",
       CASE
           WHEN f.name <> N'Günəşli' THEN ISNULL(wt.water_ton, 0)
           WHEN h.oil_density = 0 AND lr.water_cut = 0 THEN 0

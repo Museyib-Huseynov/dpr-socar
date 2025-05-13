@@ -9,7 +9,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang='en'>
-      <body className='min-w-200 h-screen w-screen grid grid-rows-[60px_1fr] select-none'>
+      <body className='min-w-200 h-screen w-screen grid grid-rows-[60px_1fr]'>
         <Header />
         {children}
       </body>

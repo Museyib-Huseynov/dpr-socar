@@ -6,6 +6,7 @@ import DatePicker from '@/components/DatePicker';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Table from '@/components/Table';
 import dayjs from 'dayjs';
+import exportToExcel from '@/util/exportAsExcel';
 
 export default function ExportPage() {
   const [OGPDs, setOGPDs] = useState([]);
@@ -31,6 +32,7 @@ export default function ExportPage() {
   const [selectedDataToDownload, setSelectedDataToDownload] = useState([]);
 
   const [downloadedData, setDownloadedData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const filteredFields = fields.filter((i) => {
     return i.ogpd_id === selectedOGPD;
@@ -64,34 +66,69 @@ export default function ExportPage() {
   }, [filteredWells]);
 
   const handleViewClick = async () => {
-    const dataResponse = await fetch(
-      `/api/download/${selectedWells.join(',')}/${selectedDataToDownload.join(
-        ','
-      )}/${dayjs(fromDate).format('YYYY-MM-DD')}/${dayjs(toDate).format(
-        'YYYY-MM-DD'
-      )}`
-    );
-    const data = await dataResponse.json();
-    setDownloadedData(data);
+    setLoading(true);
+    try {
+      const dataResponse = await fetch(
+        `/api/download/${selectedWells.join(',')}/${selectedDataToDownload.join(
+          ','
+        )}/${dayjs(fromDate).format('YYYY-MM-DD')}/${dayjs(toDate).format(
+          'YYYY-MM-DD'
+        )}`
+      );
+      const data = await dataResponse.json();
+      setDownloadedData(data);
+      return data;
+    } catch (error) {
+      console.error('Failed to fetch table data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownloadClick = async () => {
+    let dataToExport = downloadedData;
+
+    if (downloadedData.length === 0) {
+      dataToExport = await handleViewClick();
+    }
+
+    if (dataToExport.length > 0) {
+      exportToExcel(dataToExport, 'dpr.xlsx');
+    } else {
+      alert('No data to download.');
+    }
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      const OGPDsResponse = await fetch('/api/ogpd');
-      const OGPDsData = await OGPDsResponse.json();
-      setOGPDs(OGPDsData);
+      setLoading(true);
+      try {
+        const [OGPDsRes, fieldsRes, platformsRes, wellsRes] = await Promise.all(
+          [
+            fetch('/api/ogpd'),
+            fetch('/api/fields'),
+            fetch('/api/platforms'),
+            fetch('/api/wells'),
+          ]
+        );
 
-      const fieldsResponse = await fetch('/api/fields');
-      const fieldsData = await fieldsResponse.json();
-      setFields(fieldsData);
+        const [OGPDsData, fieldsData, platformsData, wellsData] =
+          await Promise.all([
+            OGPDsRes.json(),
+            fieldsRes.json(),
+            platformsRes.json(),
+            wellsRes.json(),
+          ]);
 
-      const platformsResponse = await fetch('/api/platforms');
-      const platformsData = await platformsResponse.json();
-      setPlatforms(platformsData);
-
-      const wellsResponse = await fetch('/api/wells');
-      const wellsData = await wellsResponse.json();
-      setWells(wellsData);
+        setOGPDs(OGPDsData);
+        setFields(fieldsData);
+        setPlatforms(platformsData);
+        setWells(wellsData);
+      } catch (error) {
+        console.error('Failed to fetch:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
@@ -132,7 +169,7 @@ export default function ExportPage() {
   }, [selectedWells]);
 
   return (
-    <div className='h-full w-full grid grid-rows-[auto_1fr] border-2 border-red-800 overflow-hidden'>
+    <div className='h-full w-full grid grid-rows-[auto_1fr] overflow-hidden'>
       <div className='h-fit p-7 border-b-2 border-gray-100'>
         <div className='grid place-items-center grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
           <Select
@@ -141,6 +178,7 @@ export default function ExportPage() {
             selected={selectedOGPD}
             setSelected={setSelectedOGPD}
             multiple={false}
+            disabled={loading}
           />
           <Select
             placeholder='Yataq'
@@ -194,6 +232,7 @@ export default function ExportPage() {
                 setSelectedDataToDownload([]);
                 setFromDate(null);
                 setToDate(null);
+                setDownloadedData([]);
               }}
               disabled={
                 !selectedOGPD &&
@@ -232,10 +271,12 @@ export default function ExportPage() {
                   : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
               }`}
               onClick={handleViewClick}
+              disabled={loading}
             >
               View
             </button>
             <button
+              disabled={loading}
               className={`h-10 text-white px-4 py-2 rounded ${
                 !selectedOGPD ||
                 !selectedField ||
@@ -247,6 +288,7 @@ export default function ExportPage() {
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-green-600 text-white hover:bg-green-700 cursor-pointer'
               }`}
+              onClick={handleDownloadClick}
             >
               Download
             </button>
@@ -254,10 +296,16 @@ export default function ExportPage() {
         </div>
       </div>
 
-      <div className=' border-2 border-blue-800 overflow-scroll'>
-        <div className='h-full w-max min-w-full'>
-          <Table data={downloadedData} />
-        </div>
+      <div className='overflow-auto'>
+        {loading ? (
+          <div className='h-full w-full flex items-center justify-center'>
+            <div className='animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent'></div>
+          </div>
+        ) : (
+          <div className='h-full w-max min-w-full'>
+            <Table data={downloadedData} />
+          </div>
+        )}
       </div>
     </div>
   );
