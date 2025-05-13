@@ -4,6 +4,8 @@ import { useEffect, useState, useMemo } from 'react';
 import Select from '@/components/Select';
 import DatePicker from '@/components/DatePicker';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Table from '@/components/Table';
+import dayjs from 'dayjs';
 
 export default function ExportPage() {
   const [OGPDs, setOGPDs] = useState([]);
@@ -27,6 +29,8 @@ export default function ExportPage() {
   const [toDate, setToDate] = useState(null);
 
   const [selectedDataToDownload, setSelectedDataToDownload] = useState([]);
+
+  const [downloadedData, setDownloadedData] = useState([]);
 
   const filteredFields = fields.filter((i) => {
     return i.ogpd_id === selectedOGPD;
@@ -58,6 +62,18 @@ export default function ExportPage() {
       a.name.localeCompare(b.name, undefined, { numeric: true })
     );
   }, [filteredWells]);
+
+  const handleViewClick = async () => {
+    const dataResponse = await fetch(
+      `/api/download/${selectedWells.join(',')}/${selectedDataToDownload.join(
+        ','
+      )}/${dayjs(fromDate).format('YYYY-MM-DD')}/${dayjs(toDate).format(
+        'YYYY-MM-DD'
+      )}`
+    );
+    const data = await dataResponse.json();
+    setDownloadedData(data);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,122 +132,131 @@ export default function ExportPage() {
   }, [selectedWells]);
 
   return (
-    <div className=' h-fit p-7 border-b-2 border-gray-100'>
-      <div className='grid place-items-center grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
-        <Select
-          placeholder='NQÇİ'
-          data={OGPDs}
-          selected={selectedOGPD}
-          setSelected={setSelectedOGPD}
-          multiple={false}
-        />
-        <Select
-          placeholder='Yataq'
-          data={filteredFields}
-          selected={selectedField}
-          setSelected={setSelectedField}
-          disabled={selectedOGPD === null}
-          multiple={false}
-        />
-        <Select
-          placeholder='Özül / mədən'
-          data={sortedPlatforms}
-          selected={selectedPlatforms}
-          setSelected={setSelectedPlatforms}
-          disabled={selectedField === null}
-        />
-        <Select
-          placeholder='Quyu'
-          data={sortedWells}
-          selected={selectedWells}
-          setSelected={setSelectedWells}
-          disabled={selectedPlatforms.length === 0}
-        />
-        <Select
-          placeholder='Məlumat'
-          data={dataToDownload}
-          selected={selectedDataToDownload}
-          setSelected={setSelectedDataToDownload}
-          disabled={selectedWells.length === 0}
-        />
-        <DatePicker
-          value={fromDate}
-          setValue={setFromDate}
-          placeholder={`Tarixdən`}
-          data={selectedWells}
-        />
-        <DatePicker
-          value={toDate}
-          setValue={setToDate}
-          placeholder={`Tarixə`}
-          data={selectedWells}
-        />
+    <div className='h-full w-full grid grid-rows-[auto_1fr] border-2 border-red-800 overflow-hidden'>
+      <div className='h-fit p-7 border-b-2 border-gray-100'>
+        <div className='grid place-items-center grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+          <Select
+            placeholder='NQÇİ'
+            data={OGPDs}
+            selected={selectedOGPD}
+            setSelected={setSelectedOGPD}
+            multiple={false}
+          />
+          <Select
+            placeholder='Yataq'
+            data={filteredFields}
+            selected={selectedField}
+            setSelected={setSelectedField}
+            disabled={selectedOGPD === null}
+            multiple={false}
+          />
+          <Select
+            placeholder='Özül / mədən'
+            data={sortedPlatforms}
+            selected={selectedPlatforms}
+            setSelected={setSelectedPlatforms}
+            disabled={selectedField === null}
+          />
+          <Select
+            placeholder='Quyu'
+            data={sortedWells}
+            selected={selectedWells}
+            setSelected={setSelectedWells}
+            disabled={selectedPlatforms.length === 0}
+          />
+          <Select
+            placeholder='Məlumat'
+            data={dataToDownload}
+            selected={selectedDataToDownload}
+            setSelected={setSelectedDataToDownload}
+            disabled={selectedWells.length === 0}
+          />
+          <DatePicker
+            value={fromDate}
+            setValue={setFromDate}
+            placeholder={`Tarixdən`}
+            data={selectedWells}
+          />
+          <DatePicker
+            value={toDate}
+            setValue={setToDate}
+            placeholder={`Tarixə`}
+            data={selectedWells}
+          />
 
-        <div className='flex flex-wrap gap-2 items-center'>
-          <button
-            onClick={() => {
-              setSelectedOGPD(null);
-              setSelectedField(null);
-              setSelectedPlatforms([]);
-              setSelectedWells([]);
-              setSelectedDataToDownload([]);
-              setFromDate(null);
-              setToDate(null);
-            }}
-            disabled={
-              !selectedOGPD &&
-              !selectedField &&
-              selectedPlatforms.length === 0 &&
-              selectedWells.length === 0 &&
-              selectedDataToDownload.length === 0 &&
-              !fromDate &&
-              !toDate
-            }
-            className={`h-10 flex items-center gap-1 px-1 py-2 rounded transition ${
-              !selectedOGPD &&
-              !selectedField &&
-              selectedPlatforms.length === 0 &&
-              selectedWells.length === 0 &&
-              selectedDataToDownload.length === 0 &&
-              !fromDate &&
-              !toDate
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-red-600 text-white hover:bg-red-700 cursor-pointer'
-            }`}
-          >
-            <DeleteIcon fontSize='small' />
-            {/* <span className='text-sm'>Reset</span> */}
-          </button>
-          <button
-            className={`h-10  text-white px-4 py-2 rounded ${
-              !selectedOGPD ||
-              !selectedField ||
-              selectedPlatforms.length === 0 ||
-              selectedWells.length === 0 ||
-              selectedDataToDownload.length === 0 ||
-              !fromDate ||
-              !toDate
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
-            }`}
-          >
-            Search
-          </button>
-          <button
-            className={`h-10 text-white px-4 py-2 rounded ${
-              !selectedOGPD ||
-              !selectedField ||
-              selectedPlatforms.length === 0 ||
-              selectedWells.length === 0 ||
-              selectedDataToDownload.length === 0 ||
-              !fromDate ||
-              !toDate
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-green-600 text-white hover:bg-green-700 cursor-pointer'
-            }`}
-          >
-            Download
-          </button>
+          <div className='flex flex-wrap gap-2 items-center'>
+            <button
+              onClick={() => {
+                setSelectedOGPD(null);
+                setSelectedField(null);
+                setSelectedPlatforms([]);
+                setSelectedWells([]);
+                setSelectedDataToDownload([]);
+                setFromDate(null);
+                setToDate(null);
+              }}
+              disabled={
+                !selectedOGPD &&
+                !selectedField &&
+                selectedPlatforms.length === 0 &&
+                selectedWells.length === 0 &&
+                selectedDataToDownload.length === 0 &&
+                !fromDate &&
+                !toDate
+              }
+              className={`h-10 flex items-center gap-1 px-1 py-2 rounded transition ${
+                !selectedOGPD &&
+                !selectedField &&
+                selectedPlatforms.length === 0 &&
+                selectedWells.length === 0 &&
+                selectedDataToDownload.length === 0 &&
+                !fromDate &&
+                !toDate
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-red-600 text-white hover:bg-red-700 cursor-pointer'
+              }`}
+            >
+              <DeleteIcon fontSize='small' />
+              {/* <span className='text-sm'>Reset</span> */}
+            </button>
+            <button
+              className={`h-10  text-white px-4 py-2 rounded ${
+                !selectedOGPD ||
+                !selectedField ||
+                selectedPlatforms.length === 0 ||
+                selectedWells.length === 0 ||
+                selectedDataToDownload.length === 0 ||
+                !fromDate ||
+                !toDate
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
+              }`}
+              onClick={handleViewClick}
+            >
+              View
+            </button>
+            <button
+              className={`h-10 text-white px-4 py-2 rounded ${
+                !selectedOGPD ||
+                !selectedField ||
+                selectedPlatforms.length === 0 ||
+                selectedWells.length === 0 ||
+                selectedDataToDownload.length === 0 ||
+                !fromDate ||
+                !toDate
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-green-600 text-white hover:bg-green-700 cursor-pointer'
+              }`}
+            >
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className=' border-2 border-blue-800 overflow-scroll'>
+        <div className='h-full w-max min-w-full'>
+          <Table data={downloadedData} />
         </div>
       </div>
     </div>

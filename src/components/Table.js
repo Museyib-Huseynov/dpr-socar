@@ -19,9 +19,6 @@ const DynamicTable = ({ data }) => {
 
   return (
     <TableContainer component={Paper}>
-      <Typography variant='h6' sx={{ padding: 2 }}>
-        Dynamic Data Table
-      </Typography>
       <Table size='small'>
         <TableHead>
           <TableRow>
