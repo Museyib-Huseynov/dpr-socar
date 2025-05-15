@@ -5,212 +5,196 @@ export async function GET(request, { params }) {
 
   let query = `
     SELECT
-      CONVERT(VARCHAR(10), rd.report_date, 120) AS Tarix,
-      f.name AS Yataq,
-      CASE
-        WHEN p.square IS NULL OR p.square = '' THEN p.name
-        ELSE p.name + ' / ' + p.square
-      END AS "Özül / Mədən",
-      w.name AS Quyu,
-      wsc.name "Quyu fondu",
-      pwssc.name AS "İstismar fond alt kat",
-      pm.name AS "İstismar üsulu",
-      --INCLUDE_COMPLETIONS_DATA--
-      --INCLUDE_PRESSURE_DATA--
-      --INCLUDE_PRODUCTION_DATA--
-      --INCLUDE_PUMP_DATA--
-      --INCLUDE_LOSS_DATA--
-
-    FROM daily_well_parameters AS dwp
-
-    LEFT JOIN well_stock AS ws
-      ON dwp.well_id = ws.well_id
-      AND ws.report_date_id = (
-        SELECT MAX(ws_sub.report_date_id)
-        FROM well_stock AS ws_sub
-        WHERE ws_sub.well_id = dwp.well_id
-        AND ws_sub.report_date_id <= dwp.report_date_id
-      )
-
-    LEFT JOIN completions AS c
-      ON dwp.well_id = c.well_id
-      AND c.report_date_id = (
-        SELECT MAX(c_sub.report_date_id)
-        FROM completions AS c_sub
-        WHERE c_sub.well_id = dwp.well_id
-        AND c_sub.report_date_id <= dwp.report_date_id
-      )
-
-    LEFT JOIN well_downtime_reasons AS wdr
-        ON dwp.well_id = wdr.well_id
-        AND wdr.report_date_id = (
-            SELECT MAX(wdr_sub.report_date_id)
-            FROM well_downtime_reasons AS wdr_sub
-            WHERE wdr_sub.well_id = dwp.well_id
-            AND wdr_sub.report_date_id <= dwp.report_date_id
-        )
-
-    LEFT JOIN well_tests AS wt
-        ON dwp.well_id = wt.well_id
-        AND wt.report_date_id = (
-            SELECT MAX(wt_sub.report_date_id)
-            FROM well_tests AS wt_sub
-            WHERE wt_sub.well_id = dwp.well_id
-            AND wt_sub.report_date_id <= dwp.report_date_id
-        )
-
-    LEFT JOIN laboratory_results as lr
-        ON dwp.well_id = lr.well_id
-        AND lr.report_date_id = (
-          SELECT MAX(lr_sub.report_date_id)
-          FROM laboratory_results AS lr_sub
-          WHERE lr_sub.well_id = dwp.well_id
-          AND lr_sub.report_date_id <= dwp.report_date_id
-        )
-
-    LEFT JOIN gas_well_tests as gwt
-        ON dwp.well_id = gwt.well_id
-        AND gwt.report_date_id = (
-          SELECT MAX(gwt_sub.report_date_id)
-          FROM gas_well_tests AS gwt_sub
-          WHERE gwt_sub.well_id = dwp.well_id
-          AND gwt_sub.report_date_id <= dwp.report_date_id
-        )
-
-    LEFT JOIN report_dates AS rd
-        ON dwp.report_date_id = rd.id
-
-    LEFT JOIN wells AS w
-        ON dwp.well_id = w.id
-
-    LEFT JOIN platforms AS p
-        ON w.platform_id = p.id
-
-    LEFT JOIN fields AS f
-        ON p.field_id = f.id
-
-    LEFT JOIN well_stock_categories AS wsc
-        ON ws.well_stock_category_id = wsc.id
-
-    LEFT JOIN production_well_stock_sub_categories AS pwssc
-        ON ws.production_well_stock_sub_category_id = pwssc.id
-
-    LEFT JOIN production_methods AS pm
-        ON ws.production_method_id = pm.id
-
-    LEFT JOIN horizons AS h
-        ON c.horizon_id = h.id
-
-    LEFT JOIN production_sub_skins_activities AS pssa
-        ON wdr.production_sub_skins_activity_id = pssa.id
-
-    WHERE w.id IN (${well_id}) AND rd.report_date >= '${fromDate}' AND rd.report_date <= '${toDate}'
-
-    ORDER BY f.name, rd.report_date;
+      CONVERT(VARCHAR(10), report_date, 120) AS "Tarix",
+      field AS "Yataq",
+      platform AS "Özül / Mədən",
+      well AS "Quyu",
+      ${
+        downloaded_data.includes(1)
+          ? `well_stock_category AS "Quyu fondu",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(2)
+          ? `production_well_stock_sub_category AS "İstismar fond alt kat",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(3)
+          ? `production_method AS "İstismar üsulu",`
+          : ``
+      }
+      ${downloaded_data.includes(4) ? `horizon AS "Horizont",` : ``}
+      ${
+        downloaded_data.includes(5)
+          ? `completion_interval AS "Tamamlama intervalı",`
+          : ``
+      }
+      ${downloaded_data.includes(6) ? `casing AS "İstismar kəməri",` : ``}
+      ${
+        downloaded_data.includes(7)
+          ? `tubing1_depth AS "1-ci sıra", tubing1_length AS "1-ci sıra",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(8)
+          ? `tubing2_depth AS "2-ci sıra", tubing2_length AS "2-ci sıra",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(9)
+          ? `tubing3_depth AS "3-ci sıra", tubing3_length AS "3-ci sıra",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(47)
+          ? `flowmeter AS "Hansı sərfölçənə işləyir",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(10)
+          ? `well_uptime_hours AS "İşləmə saatı",`
+          : ``
+      }
+      ${downloaded_data.includes(11) ? `liquid_ton AS "Maye (ton)",` : ``}
+      ${
+        downloaded_data.includes(12)
+          ? `oil_ton_wellTest AS "Neft (ton) - ölçü",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(13)
+          ? `oil_ton_allocated AS "Neft (ton) - paylanılmış",`
+          : ``
+      }
+      ${downloaded_data.includes(14) ? `water_ton AS "Su (ton)",` : ``}
+      ${downloaded_data.includes(15) ? `total_gas AS "Cəm qaz (m3)",` : ``}
+      ${
+        downloaded_data.includes(16) ? `gaslift_gas AS "Qazlift qaz (m3)",` : ``
+      }
+      ${
+        downloaded_data.includes(17)
+          ? `produced_gas AS "Çıxarılan qaz (m3)",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(18)
+          ? `produced_gas AS "Çıxarılan qaz (m3)",`
+          : ``
+      }
+      ${downloaded_data.includes(19) ? `Pqa AS "Pqa",` : ``}
+      ${downloaded_data.includes(20) ? `Phf AS "Phf",` : ``}
+      ${downloaded_data.includes(21) ? `Pba AS "Pba",` : ``}
+      ${downloaded_data.includes(22) ? `P6x9 AS "P6x9",` : ``}
+      ${downloaded_data.includes(23) ? `P9x13 AS "P9x13",` : ``}
+      ${downloaded_data.includes(24) ? `P13x20 AS "P13x20",` : ``}
+      ${downloaded_data.includes(25) ? `choke AS "Ştuser",` : ``}
+      ${
+        downloaded_data.includes(26)
+          ? `pump_depth AS "Nasosun buraxılma dərinliyi",`
+          : ``
+      }
+      ${downloaded_data.includes(27) ? `pump_frequency AS "Tezlik",` : ``}
+      ${
+        downloaded_data.includes(28)
+          ? `pump_hydrostatic_pressure AS "Nasosa düşən təzyiq",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(29)
+          ? `esp_pump_size AS "Nasosun qabariti (MEDN)",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(30)
+          ? `esp_pump_stages AS "Nasosun pillələrinin sayı (MEDN)",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(31)
+          ? `esp_pump_rate AS "Nasosun verimi (MEDN)",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(32)
+          ? `esp_pump_head AS "Nasosun basqısı (MEDN)",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(33)
+          ? `esp_downhole_gas_separator AS "Quyuiçi qaz separatoru (MEDN)",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(34)
+          ? `srp_pumpjack_type AS "Mancanaq dəzgahının növü",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(35)
+          ? `srp_pump_plunger_diameter AS "Plunjerin diametri (ŞDN)",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(36)
+          ? `srp_plunger_stroke_length AS "Plunjerin gediş yolu (ŞDN)",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(37)
+          ? `srp_balancer_oscillation_frequency AS "Balansirin yırğalanma sayı (ŞDN)",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(38)
+          ? `srp_pump_rate_coefficient AS "Nasosun verim əmsalı (ŞDN)",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(39)
+          ? `srp_max_motor_speed AS "Elek.müh.mak.dövr.say (ŞDN)",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(40)
+          ? `srp_shaft_diameter AS "Şkifin diametri (ŞDN)",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(41)
+          ? `pcp_pump_rate AS "Nasosun verimi (Vintli)",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(42)
+          ? `pcp_rpm AS "Dövrlər sayı (Vintli)",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(43)
+          ? `pcp_screw_diameter AS "Vintin diametri",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(44)
+          ? `donwtime_category AS "İtki kateqoriyası",`
+          : ``
+      }
+      ${
+        downloaded_data.includes(45)
+          ? `production_skin AS "İtki təbəqəsi",`
+          : ``
+      }
+      ${downloaded_data.includes(46) ? `comments AS "Rəylər",` : ``}
+    FROM 
+      complete_table ct
+    JOIN 
+      wells w ON w.name = ct.well
+    WHERE 
+      w.id IN (${well_id})
+    AND 
+      ct.report_date BETWEEN '${fromDate}' AND '${toDate}'
   `;
-
-  if (downloaded_data.includes(1)) {
-    query = query.replace(
-      '--INCLUDE_PRESSURE_DATA--',
-      `
-      dwp.pqa AS Pqa,
-      dwp.phf AS Phf,
-      dwp.pba AS Pba,
-      dwp.p6x9 AS P6x9,
-      dwp.p9x13 AS P9x13,
-      dwp.p13x20 AS P13x20,
-      dwp.choke AS ştuser,
-    `
-    );
-  } else {
-    query = query.replace('--INCLUDE_PRESSURE_DATA--', '');
-  }
-
-  if (downloaded_data.includes(2)) {
-    query = query.replace(
-      '--INCLUDE_PRODUCTION_DATA--',
-      `
-      dwp.well_uptime_hours AS "İşləmə saatı",  
-      ROUND(wt.liquid_ton, 0) AS "Maye (ton)",
-      ROUND(lr.water_cut, 1) AS Sulaşma,
-      CASE
-          WHEN f.name <> N'Günəşli' THEN ISNULL(wt.oil_ton, 0)
-          WHEN h.oil_density = 0 AND lr.water_cut = 0 THEN 0
-          ELSE ROUND(wt.liquid_ton * h.oil_density * (1 - (lr.water_cut / 100)) / (h.oil_density * (1 - (lr.water_cut / 100)) + (lr.water_cut / 100)), 0)
-      END AS "Neft (ton) - ölçü",
-      CASE
-          WHEN f.name <> N'Günəşli' THEN ISNULL(wt.water_ton, 0)
-          WHEN h.oil_density = 0 AND lr.water_cut = 0 THEN 0
-          ELSE ROUND(wt.liquid_ton * (lr.water_cut / 100) / (h.oil_density * (1 - (lr.water_cut / 100)) + (lr.water_cut / 100)), 0)
-      END AS "Su (ton)",
-      ROUND(gwt.total_gas, 0) AS "Cəm qaz (m3)",
-      ROUND(gwt.gaslift_gas, 0) AS "Qazlift qaz (m3)",
-      ROUND((gwt.total_gas - gwt.gaslift_gas) * dwp.well_uptime_hours / 24, 0) AS "Hasil olunan qaz (m3)",
-      ROUND(lr.mechanical_impurities, 1) AS "Mexaniki qarışıq",
-      `
-    );
-  } else {
-    query = query.replace('--INCLUDE_PRODUCTION_DATA--', '');
-  }
-
-  if (downloaded_data.includes(3)) {
-    query = query.replace(
-      '--INCLUDE_COMPLETIONS_DATA--',
-      `
-      h.name AS horizon,
-      c.completion_interval AS "Tamamlama intervalı",
-      c.tubing1_depth AS "1-ci sıra",
-      c.tubing1_length AS "1-ci sıra",
-      c.tubing2_depth AS "2-ci sıra",
-      c.tubing2_length AS "2-ci sıra",
-      c.tubing3_depth AS "3-cü sıra",
-      c.tubing3_length AS "3-cü sıra",
-    `
-    );
-  } else {
-    query = query.replace('--INCLUDE_COMPLETIONS_DATA--', '');
-  }
-
-  if (downloaded_data.includes(4)) {
-    query = query.replace(
-      '--INCLUDE_PUMP_DATA--',
-      `
-      dwp.pump_depth AS "Nasosun buraxılma dərinliyi",
-      dwp.pump_frequency AS "Tezlik",
-      dwp.pump_hydrostatic_pressure AS "Nasosa düşən təzyiq",
-      dwp.esp_pump_size AS "Nasosun qabariti (MEDN)",
-      dwp.esp_pump_stages AS "Nasosun pillələrinin sayı (MEDN)",
-      dwp.esp_pump_rate AS "Nasosun verimi (MEDN)",
-      dwp.esp_pump_head AS "Nasosun basqısı",
-      dwp.esp_downhole_gas_separator AS "Quyuiçi qaz separatoru",
-      dwp.srp_pumpjack_type AS "Mancanaq dəzgahının növü",
-      dwp.srp_pump_plunger_diameter AS "Plunjerin diametri (ŞDN)",
-      dwp.srp_plunger_stroke_length AS "Plunjerin gediş yolu (ŞDN)",
-      dwp.srp_balancer_oscillation_frequency AS "Balansirin yırğalanma sayı (ŞDN)",
-      dwp.srp_pump_rate_coefficient AS "Nasosun verim əmsalı (ŞDN)",
-      dwp.srp_max_motor_speed AS "Elek.müh.mak.dövr.say (ŞDN)",
-      dwp.srp_shaft_diameter AS "Şkifin diametri (ŞDN)",
-      dwp.pcp_pump_rate AS "Nasosun verimi (Vintli)",
-      dwp.pcp_rpm AS "Dövrlər sayı (Vintli)",
-      dwp.pcp_screw_diameter AS "Vintin diametri",  
-    `
-    );
-  } else {
-    query = query.replace('--INCLUDE_PUMP_DATA--', ``);
-  }
-
-  if (downloaded_data.includes(5)) {
-    query = query.replace(
-      '--INCLUDE_LOSS_DATA--',
-      `
-      wdr.downtime_category AS "İtki kateqoriyası",
-      pssa.name AS "İtki təbəqəsi",
-      wdr.comments AS "Rəylər",
-    `
-    );
-  } else {
-    query = query.replace('--INCLUDE_LOSS_DATA--', ``);
-  }
 
   query = query.replace(/,\s*FROM/i, ' FROM');
 

@@ -8,6 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import ListItemText from '@mui/material/ListItemText';
 import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
+import ListSubheader from '@mui/material/ListSubheader';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -28,6 +29,8 @@ export default function MultipleSelectCheckmarks({
   setSelected,
   disabled = false,
   multiple = true,
+  group = false,
+  groupKey = 'group', // expects `group` key in data objects
 }) {
   const isAllSelected =
     multiple && data.length > 0 && (selected ?? []).length === data.length;
@@ -53,6 +56,18 @@ export default function MultipleSelectCheckmarks({
   const getNameById = (id) => {
     return data.find((item) => item.id === id)?.name || '';
   };
+
+  // Grouping logic
+  const groupedData = React.useMemo(() => {
+    if (!group) return null;
+
+    return data.reduce((acc, item) => {
+      const groupName = item[groupKey] || 'Digər';
+      if (!acc[groupName]) acc[groupName] = [];
+      acc[groupName].push(item);
+      return acc;
+    }, {});
+  }, [data, group, groupKey]);
 
   return (
     <div className='w-[200px] p-3'>
@@ -86,18 +101,36 @@ export default function MultipleSelectCheckmarks({
             </MenuItem>
           )}
 
-          {data.map((item) => (
-            <MenuItem key={item.id ?? item.name} value={item.id}>
-              {multiple ? (
-                <>
-                  <Checkbox checked={selected?.includes(item.id)} />
-                  <ListItemText primary={item.name} />
-                </>
-              ) : (
-                <ListItemText primary={item.name} />
-              )}
-            </MenuItem>
-          ))}
+          {group && groupedData
+            ? Object.entries(groupedData).map(([groupName, items]) => [
+                <ListSubheader key={`group-${groupName}`}>
+                  {groupName}
+                </ListSubheader>,
+                items.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {multiple ? (
+                      <>
+                        <Checkbox checked={selected?.includes(item.id)} />
+                        <ListItemText primary={item.name} />
+                      </>
+                    ) : (
+                      <ListItemText primary={item.name} />
+                    )}
+                  </MenuItem>
+                )),
+              ])
+            : data.map((item) => (
+                <MenuItem key={item.id ?? item.name} value={item.id}>
+                  {multiple ? (
+                    <>
+                      <Checkbox checked={selected?.includes(item.id)} />
+                      <ListItemText primary={item.name} />
+                    </>
+                  ) : (
+                    <ListItemText primary={item.name} />
+                  )}
+                </MenuItem>
+              ))}
         </Select>
       </FormControl>
     </div>

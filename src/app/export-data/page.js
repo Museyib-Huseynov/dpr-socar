@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import Select from '@/components/Select';
+import Select from '@/components/GroupSelect';
 import DatePicker from '@/components/DatePicker';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Table from '@/components/Table';
+import PaginatedTable from '@/components/PaginatedTable';
 import dayjs from 'dayjs';
 import exportToExcel from '@/util/exportAsExcel';
 
@@ -14,11 +14,53 @@ export default function ExportPage() {
   const [platforms, setPlatforms] = useState([]);
   const [wells, setWells] = useState([]);
   const [dataToDownload, _] = useState([
-    { id: 1, name: 'təzyiq' },
-    { id: 2, name: 'hasilat' },
-    { id: 3, name: 'tamamlama' },
-    { id: 4, name: 'nasos' },
-    { id: 5, name: 'itki kateqoriyası' },
+    { id: 1, name: 'Kateqoriya', group: 'Quyu fondu' },
+    { id: 2, name: 'İstismar fond alt kat', group: 'Quyu fondu' },
+    { id: 3, name: 'İstismar üsulu', group: 'Quyu fondu' },
+    { id: 4, name: 'Horizont', group: 'Tamamlama' },
+    { id: 5, name: 'Tamamlama intervalı', group: 'Tamamlama' },
+    { id: 6, name: 'İstismar kəməri', group: 'Tamamlama' },
+    { id: 7, name: '1-ci sıra', group: 'Tamamlama' },
+    { id: 8, name: '2-ci sıra', group: 'Tamamlama' },
+    { id: 9, name: '3-cü sıra', group: 'Tamamlama' },
+    { id: 10, name: 'İşləmə saatı', group: 'Hasilat' },
+    { id: 11, name: 'Maye (ton)', group: 'Hasilat' },
+    { id: 12, name: 'Neft (ton) - ölçü', group: 'Hasilat' },
+    { id: 13, name: 'Neft (ton) - paylanılmış', group: 'Hasilat' },
+    { id: 14, name: 'Su (ton)', group: 'Hasilat' },
+    { id: 15, name: 'Cəm qaz (m3)', group: 'Hasilat' },
+    { id: 16, name: 'Qazlift qaz (m3)', group: 'Hasilat' },
+    { id: 17, name: 'Çıxarılan qaz (m3)', group: 'Hasilat' },
+    { id: 18, name: 'Mexaniki qarışıq', group: 'Hasilat' },
+    { id: 19, name: 'Pqa', group: 'Təzyiq' },
+    { id: 20, name: 'Phf', group: 'Təzyiq' },
+    { id: 21, name: 'Pba', group: 'Təzyiq' },
+    { id: 22, name: 'P6x9', group: 'Təzyiq' },
+    { id: 23, name: 'P9x13', group: 'Təzyiq' },
+    { id: 24, name: 'P13x20', group: 'Təzyiq' },
+    { id: 25, name: 'Ştuser', group: 'Təzyiq' },
+    { id: 26, name: 'Nasosun buraxılma dərinliyi', group: 'Nasos' },
+    { id: 27, name: 'Tezlik', group: 'Nasos' },
+    { id: 28, name: 'Nasosa düşən təzyiq', group: 'Nasos' },
+    { id: 29, name: 'Nasosun qabariti (MEDN)', group: 'Nasos' },
+    { id: 30, name: 'Nasosun pillələrinin sayı (MEDN)', group: 'Nasos' },
+    { id: 31, name: 'Nasosun verimi (MEDN)', group: 'Nasos' },
+    { id: 32, name: 'Nasosun basqısı (MEDN)', group: 'Nasos' },
+    { id: 33, name: 'Quyuiçi qaz separatoru (MEDN)', group: 'Nasos' },
+    { id: 34, name: 'Mancanaq dəzgahının növü', group: 'Nasos' },
+    { id: 35, name: 'Plunjerin diametri (ŞDN)', group: 'Nasos' },
+    { id: 36, name: 'Plunjerin gediş yolu (ŞDN)', group: 'Nasos' },
+    { id: 37, name: 'Balansirin yırğalanma sayı (ŞDN)', group: 'Nasos' },
+    { id: 38, name: 'Nasosun verim əmsalı (ŞDN)', group: 'Nasos' },
+    { id: 39, name: 'Elek.müh.mak.dövr.say (ŞDN)', group: 'Nasos' },
+    { id: 40, name: 'Şkifin diametri (ŞDN)', group: 'Nasos' },
+    { id: 41, name: 'Nasosun verimi (Vintli)', group: 'Nasos' },
+    { id: 42, name: 'Dövrlər sayı (Vintli)', group: 'Nasos' },
+    { id: 43, name: 'Vintin diametri', group: 'Nasos' },
+    { id: 44, name: 'İtki kateqoriyası', group: 'İtkilər' },
+    { id: 45, name: 'İtki təbəqəsi', group: 'İtkilər' },
+    { id: 46, name: 'Rəylər', group: 'İtkilər' },
+    { id: 47, name: 'Hansı sərfölçənə işləyir' },
   ]);
 
   const [selectedOGPD, setSelectedOGPD] = useState(null);
@@ -212,6 +254,7 @@ export default function ExportPage() {
             selected={selectedDataToDownload}
             setSelected={setSelectedDataToDownload}
             disabled={selectedWells.length === 0}
+            group={true}
           />
           <DatePicker
             value={fromDate}
@@ -307,7 +350,7 @@ export default function ExportPage() {
           </div>
         ) : (
           <div className='h-full w-max min-w-full'>
-            <Table data={downloadedData} />
+            <PaginatedTable data={downloadedData} />
           </div>
         )}
       </div>
