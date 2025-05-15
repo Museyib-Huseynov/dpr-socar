@@ -80,7 +80,7 @@ export async function GET(request, { params }) {
       }
       ${
         downloaded_data.includes(18)
-          ? `produced_gas AS "Çıxarılan qaz (m3)",`
+          ? `mechanical_impurities AS "Mexaniki qarışıq",`
           : ``
       }
       ${downloaded_data.includes(19) ? `Pqa AS "Pqa",` : ``}
