@@ -1,7 +1,8 @@
 import { getPool } from '@/util/db';
 
 export async function GET(request, { params }) {
-  const { well_id, downloaded_data, fromDate, toDate } = await params;
+  let { well_id, downloaded_data, fromDate, toDate } = await params;
+  downloaded_data = downloaded_data.split(',').map((i) => +i);
 
   let query = `
     SELECT
@@ -194,6 +195,7 @@ export async function GET(request, { params }) {
       w.id IN (${well_id})
     AND 
       ct.report_date BETWEEN '${fromDate}' AND '${toDate}'
+    ORDER BY report_date DESC;
   `;
 
   query = query.replace(/,\s*FROM/i, ' FROM');
