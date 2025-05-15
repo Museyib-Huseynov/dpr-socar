@@ -110,8 +110,6 @@ export default function ExportPage() {
     );
   }, [filteredWells]);
 
-  console.log(sortedWells);
-
   const handleViewClick = async () => {
     setLoading(true);
     try {
