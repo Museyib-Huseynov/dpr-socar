@@ -34,17 +34,17 @@ export async function GET(request, { params }) {
       ${downloaded_data.includes(6) ? `casing AS "İstismar kəməri",` : ``}
       ${
         downloaded_data.includes(7)
-          ? `tubing1_depth AS "1-ci sıra", tubing1_length AS "1-ci sıra",`
+          ? `tubing1_depth AS "1-ci sıra (diameter)", tubing1_length AS "1-ci sıra (uzunluq)",`
           : ``
       }
       ${
         downloaded_data.includes(8)
-          ? `tubing2_depth AS "2-ci sıra", tubing2_length AS "2-ci sıra",`
+          ? `tubing2_depth AS "2-ci sıra (diameter)", tubing2_length AS "2-ci sıra (uzunluq)",`
           : ``
       }
       ${
         downloaded_data.includes(9)
-          ? `tubing3_depth AS "3-ci sıra", tubing3_length AS "3-ci sıra",`
+          ? `tubing3_depth AS "3-ci sıra (diameter)", tubing3_length AS "3-ci sıra (uzunluq)",`
           : ``
       }
       ${
