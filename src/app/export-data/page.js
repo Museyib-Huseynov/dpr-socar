@@ -234,7 +234,7 @@ export default function ExportPage() {
             data={filteredFields}
             selected={selectedField}
             setSelected={setSelectedField}
-            disabled={selectedOGPD === null}
+            disabled={selectedOGPD === null || loading}
             multiple={false}
           />
           <Select
@@ -242,14 +242,14 @@ export default function ExportPage() {
             data={sortedPlatforms}
             selected={selectedPlatforms}
             setSelected={setSelectedPlatforms}
-            disabled={selectedField === null}
+            disabled={selectedField === null || loading}
           />
           <Select
             placeholder='Quyu'
             data={sortedWells}
             selected={selectedWells}
             setSelected={setSelectedWells}
-            disabled={selectedPlatforms.length === 0}
+            disabled={selectedPlatforms.length === 0 || loading}
             group={true}
             groupKey='platform_name'
           />
@@ -258,7 +258,7 @@ export default function ExportPage() {
             data={dataToDownload}
             selected={selectedDataToDownload}
             setSelected={setSelectedDataToDownload}
-            disabled={selectedWells.length === 0}
+            disabled={selectedWells.length === 0 || loading}
             group={true}
           />
           <DatePicker
@@ -266,12 +266,14 @@ export default function ExportPage() {
             setValue={setFromDate}
             placeholder={`Tarixdən`}
             data={selectedWells}
+            disabled={loading}
           />
           <DatePicker
             value={toDate}
             setValue={setToDate}
             placeholder={`Tarixə`}
             data={selectedWells}
+            disabled={loading}
           />
 
           <div className='flex flex-wrap gap-2 items-center'>
@@ -287,22 +289,24 @@ export default function ExportPage() {
                 setDownloadedData([]);
               }}
               disabled={
-                !selectedOGPD &&
-                !selectedField &&
-                selectedPlatforms.length === 0 &&
-                selectedWells.length === 0 &&
-                selectedDataToDownload.length === 0 &&
-                !fromDate &&
-                !toDate
+                (!selectedOGPD &&
+                  !selectedField &&
+                  selectedPlatforms.length === 0 &&
+                  selectedWells.length === 0 &&
+                  selectedDataToDownload.length === 0 &&
+                  !fromDate &&
+                  !toDate) ||
+                loading
               }
               className={`h-10 flex items-center gap-1 px-1 py-2 rounded transition ${
-                !selectedOGPD &&
-                !selectedField &&
-                selectedPlatforms.length === 0 &&
-                selectedWells.length === 0 &&
-                selectedDataToDownload.length === 0 &&
-                !fromDate &&
-                !toDate
+                (!selectedOGPD &&
+                  !selectedField &&
+                  selectedPlatforms.length === 0 &&
+                  selectedWells.length === 0 &&
+                  selectedDataToDownload.length === 0 &&
+                  !fromDate &&
+                  !toDate) ||
+                loading
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-red-600 text-white hover:bg-red-700 cursor-pointer'
               }`}
@@ -318,7 +322,8 @@ export default function ExportPage() {
                 selectedWells.length === 0 ||
                 selectedDataToDownload.length === 0 ||
                 !fromDate ||
-                !toDate
+                !toDate ||
+                loading
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
               }`}
@@ -336,7 +341,8 @@ export default function ExportPage() {
                 selectedWells.length === 0 ||
                 selectedDataToDownload.length === 0 ||
                 !fromDate ||
-                !toDate
+                !toDate ||
+                loading
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-green-600 text-white hover:bg-green-700 cursor-pointer'
               }`}

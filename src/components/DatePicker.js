@@ -7,7 +7,13 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TextField } from '@mui/material';
 import dayjs from 'dayjs';
 
-export default function MyDatePicker({ value, setValue, placeholder, data }) {
+export default function MyDatePicker({
+  value,
+  setValue,
+  placeholder,
+  data,
+  disabled = false,
+}) {
   const [validDates, setValidDates] = useState([]);
 
   useEffect(() => {
@@ -42,7 +48,7 @@ export default function MyDatePicker({ value, setValue, placeholder, data }) {
           value={value}
           onChange={(newValue) => setValue(newValue)}
           shouldDisableDate={shouldDisableDate}
-          disabled={data.length === 0}
+          disabled={data.length === 0 || disabled}
           sx={{
             width: 200,
           }}
