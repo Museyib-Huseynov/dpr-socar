@@ -248,6 +248,8 @@ export default function ExportPage() {
             selected={selectedWells}
             setSelected={setSelectedWells}
             disabled={selectedPlatforms.length === 0}
+            group={true}
+            groupKey='platform_name'
           />
           <Select
             placeholder='Məlumat'
