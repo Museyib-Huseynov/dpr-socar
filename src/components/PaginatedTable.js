@@ -51,12 +51,25 @@ const PaginatedTable = ({ data }) => {
 
   return (
     <Paper>
-      <TableContainer>
+      <TableContainer
+        sx={{
+          maxHeight: 560,
+          overflow: 'auto',
+        }}
+      >
         <Table stickyHeader size='small'>
           <TableHead>
             <TableRow>
               {headers.map((header) => (
-                <TableCell key={header}>{header}</TableCell>
+                <TableCell
+                  key={header}
+                  sx={{
+                    backgroundColor: 'background.paper',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {header}
+                </TableCell>
               ))}
             </TableRow>
           </TableHead>

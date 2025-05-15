@@ -7,6 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PaginatedTable from '@/components/PaginatedTable';
 import dayjs from 'dayjs';
 import exportToExcel from '@/util/exportAsExcel';
+import VirtualizedTable from '@/components/VirtualizedTable';
 
 export default function ExportPage() {
   const [OGPDs, setOGPDs] = useState([]);
@@ -350,7 +351,8 @@ export default function ExportPage() {
           </div>
         ) : (
           <div className='h-full w-max min-w-full'>
-            <PaginatedTable data={downloadedData} />
+            {/* <PaginatedTable data={downloadedData} /> */}
+            <VirtualizedTable data={downloadedData} />
           </div>
         )}
       </div>
