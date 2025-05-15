@@ -102,23 +102,29 @@ export default function MultipleSelectCheckmarks({
           )}
 
           {group && groupedData
-            ? Object.entries(groupedData).map(([groupName, items]) => [
-                <ListSubheader key={`group-${groupName}`}>
-                  {groupName}
-                </ListSubheader>,
-                items.map((item) => (
-                  <MenuItem key={item.id} value={item.id}>
-                    {multiple ? (
-                      <>
-                        <Checkbox checked={selected?.includes(item.id)} />
+            ? Object.entries(groupedData)
+                .sort(([a], [b]) => {
+                  const aNum = Number(a.split('/')[0].trim());
+                  const bNum = Number(b.split('/')[0].trim());
+                  return aNum - bNum;
+                })
+                .map(([groupName, items]) => [
+                  <ListSubheader key={`group-${groupName}`}>
+                    {groupName}
+                  </ListSubheader>,
+                  items.map((item) => (
+                    <MenuItem key={item.id} value={item.id}>
+                      {multiple ? (
+                        <>
+                          <Checkbox checked={selected?.includes(item.id)} />
+                          <ListItemText primary={item.name} />
+                        </>
+                      ) : (
                         <ListItemText primary={item.name} />
-                      </>
-                    ) : (
-                      <ListItemText primary={item.name} />
-                    )}
-                  </MenuItem>
-                )),
-              ])
+                      )}
+                    </MenuItem>
+                  )),
+                ])
             : data.map((item) => (
                 <MenuItem key={item.id ?? item.name} value={item.id}>
                   {multiple ? (

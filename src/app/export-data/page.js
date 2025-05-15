@@ -90,7 +90,7 @@ export default function ExportPage() {
       .map((l) => {
         return {
           id: l.id,
-          name: l.square ? `${l.name} / ${l.square}` : l.name,
+          name: l.square ? `${l.name} / ${l.square}` : `${l.name}`,
         };
       })
       .sort((a, b) =>
@@ -104,9 +104,13 @@ export default function ExportPage() {
 
   const sortedWells = useMemo(() => {
     return filteredWells.sort((a, b) =>
-      a.name.localeCompare(b.name, undefined, { numeric: true })
+      a.platform_name.localeCompare(b.platform_name, undefined, {
+        numeric: true,
+      })
     );
   }, [filteredWells]);
+
+  console.log(sortedWells);
 
   const handleViewClick = async () => {
     setLoading(true);
