@@ -31,7 +31,7 @@ const VirtualizedTable = ({ data }) => {
   const headers = Object.keys(data[0]);
 
   return (
-    <Paper sx={{ height: 600, width: '100%', overflow: 'auto' }}>
+    <Paper sx={{ height: '100%', width: '100%', overflow: 'auto' }}>
       <TableVirtuoso
         data={data}
         components={{
