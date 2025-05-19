@@ -17,6 +17,7 @@
     "@mui/x-date-pickers": "^8.3.0",
     "dayjs": "^1.11.13",
     "file-saver": "^2.0.5",
+    "lottie-react": "^2.4.1",
     "mssql": "^11.0.1",
     "next": "15.3.1",
     "react": "^19.0.0",
