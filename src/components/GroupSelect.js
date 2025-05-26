@@ -89,7 +89,7 @@ export default function MultipleSelectCheckmarks({
           sx={{ height: 50 }}
           disabled={disabled}
         >
-          {multiple && (
+          {multiple && data.length > 0 && (
             <MenuItem value='Hamısı'>
               <Checkbox
                 checked={isAllSelected}

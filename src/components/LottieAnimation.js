@@ -3,11 +3,11 @@
 import Lottie from 'lottie-react';
 import { useEffect, useState } from 'react';
 
-export default function Dashboards() {
+export default function LottieAnimation({ type }) {
   const [animationData, setAnimationData] = useState(null);
 
   useEffect(() => {
-    fetch('/maintenance2.json') // No need for full path, since it's in public/
+    fetch(`/${type}.json`)
       .then((res) => res.json())
       .then((data) => setAnimationData(data));
   }, []);

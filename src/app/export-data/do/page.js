@@ -7,7 +7,7 @@ import DatePicker from '@/components/DatePicker';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function DO() {
-  const { OGPDs } = useStaticData();
+  const { doOGPDs } = useStaticData();
   const [selectedOGPDs, setSelectedOGPDs] = useState([]);
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
@@ -52,7 +52,7 @@ export default function DO() {
         <div className='grid place-items-center grid-cols-2 lg:grid-cols-4 gap-4'>
           <Select
             placeholder='NQÇİ'
-            data={OGPDs}
+            data={doOGPDs}
             selected={selectedOGPDs}
             setSelected={setSelectedOGPDs}
           />

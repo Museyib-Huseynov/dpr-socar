@@ -10,7 +10,7 @@ import VirtualizedTable from '@/components/VirtualizedTable';
 import { useStaticData } from '@/context/StaticDataContext';
 
 export default function DPR() {
-  const { OGPDs, fields, platforms, wells } = useStaticData();
+  const { dprOGPDs, fields, platforms, wells } = useStaticData();
   const [dataToDownload, _] = useState([
     { id: 1, name: 'Kateqoriya', group: 'Quyu fondu' },
     { id: 2, name: 'İstismar fond alt kat', group: 'Quyu fondu' },
@@ -185,7 +185,7 @@ export default function DPR() {
         <div className='grid place-items-center grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
           <Select
             placeholder='NQÇİ'
-            data={OGPDs}
+            data={dprOGPDs}
             selected={selectedOGPD}
             setSelected={setSelectedOGPD}
             multiple={false}

@@ -1,5 +1,5 @@
-import Maintenance from '@/components/Maintenance';
+import LottieAnimation from '@/components/LottieAnimation';
 
 export default function MR() {
-  return <Maintenance />;
+  return <LottieAnimation type='maintenance' />;
 }
