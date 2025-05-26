@@ -83,19 +83,21 @@ export async function GET(request, { params }) {
           ? `mechanical_impurities AS "Mexaniki qarışıq",`
           : ``
       }
-      ${downloaded_data.includes(19) ? `Pqa AS "Pqa",` : ``}
-      ${downloaded_data.includes(20) ? `Phf AS "Phf",` : ``}
-      ${downloaded_data.includes(21) ? `Pba AS "Pba",` : ``}
-      ${downloaded_data.includes(22) ? `P6x9 AS "P6x9",` : ``}
-      ${downloaded_data.includes(23) ? `P9x13 AS "P9x13",` : ``}
-      ${downloaded_data.includes(24) ? `P13x20 AS "P13x20",` : ``}
+      ${downloaded_data.includes(19) ? `Pqa AS "Pqa (atm)",` : ``}
+      ${downloaded_data.includes(20) ? `Phf AS "Phf (atm)",` : ``}
+      ${downloaded_data.includes(21) ? `Pba AS "Pba (atm)",` : ``}
+      ${downloaded_data.includes(22) ? `P6x9 AS "P6x9 (atm)",` : ``}
+      ${downloaded_data.includes(23) ? `P9x13 AS "P9x13 (atm)",` : ``}
+      ${downloaded_data.includes(24) ? `P13x20 AS "P13x20 (atm)",` : ``}
       ${downloaded_data.includes(25) ? `choke AS "Ştuser",` : ``}
       ${
         downloaded_data.includes(26)
           ? `pump_depth AS "Nasosun buraxılma dərinliyi",`
           : ``
       }
-      ${downloaded_data.includes(27) ? `pump_frequency AS "Tezlik",` : ``}
+      ${
+        downloaded_data.includes(27) ? `pump_frequency AS "Tezlik (Herz)",` : ``
+      }
       ${
         downloaded_data.includes(28)
           ? `pump_hydrostatic_pressure AS "Nasosa düşən təzyiq",`
