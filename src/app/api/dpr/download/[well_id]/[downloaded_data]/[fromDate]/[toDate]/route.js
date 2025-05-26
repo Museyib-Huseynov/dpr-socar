@@ -193,9 +193,10 @@ export async function GET(request, { params }) {
       wells w ON w.name = ct.well
     WHERE 
       w.id IN (${well_id})
-    AND 
+        AND 
       ct.report_date BETWEEN '${fromDate}' AND '${toDate}'
-    ORDER BY report_date DESC;
+    ORDER BY 
+      report_date DESC;
   `;
 
   query = query.replace(/,\s*FROM/i, ' FROM');

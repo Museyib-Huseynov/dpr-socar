@@ -11,6 +11,7 @@ export default function MyDatePicker({
   value,
   setValue,
   placeholder,
+  data_type,
   data,
   disabled = false,
 }) {
@@ -18,7 +19,7 @@ export default function MyDatePicker({
 
   useEffect(() => {
     if (data.length > 0) {
-      fetch(`/api/valid_dates/${data.join(',')}`)
+      fetch(`/api/${data_type}/valid_dates/${data.join(',')}`)
         .then((res) => res.json())
         .then((date) => {
           const parsed = date.map((d) => dayjs(d.report_date).startOf('day'));

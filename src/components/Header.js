@@ -8,7 +8,7 @@ export default function Header() {
   const segments = pathname.split('/').filter(Boolean);
 
   return (
-    <header className='border-b-2 border-gray-100 grid grid-cols-[300px_1fr_160px]'>
+    <header className='border-b-2 border-gray-100 grid grid-cols-[400px_1fr_160px]'>
       <nav className='text-2xl self-center'>
         <Link href='/' className='text-blue-500 hover:underline ml-5'>
           Home
