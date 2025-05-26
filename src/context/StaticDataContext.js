@@ -1,10 +1,12 @@
 'use client';
 import { createContext, useContext, useState, useEffect } from 'react';
+import ImageSVG from '@/components/ImageSVG';
 
 const StaticDataContext = createContext(null);
 
 export default function StaticDataProvider({ children }) {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const [dprOGPDs, setDprOGPDs] = useState([]);
   const [doOGPDs, setDoOGPDs] = useState([]);
@@ -46,6 +48,7 @@ export default function StaticDataProvider({ children }) {
         setWells(wellsData);
       } catch (error) {
         console.error('Failed to fetch:', error);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -53,6 +56,10 @@ export default function StaticDataProvider({ children }) {
 
     fetchData();
   }, []);
+
+  if (error) {
+    return <ImageSVG type='error' width={400} height={400} />;
+  }
 
   return (
     <StaticDataContext.Provider

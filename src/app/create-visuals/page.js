@@ -1,3 +1,5 @@
+import ImageSVG from '@/components/ImageSVG';
+
 export default function CreateVisuals() {
-  return <h1>Create Visuals</h1>;
+  return <ImageSVG type='graphs' width={250} height={250} />;
 }

@@ -1,5 +1,5 @@
-import LottieAnimation from '@/components/LottieAnimation';
+import ImageSVG from '@/components/ImageSVG';
 
 export default function Dashboards() {
-  return <LottieAnimation type='maintenance' />;
+  return <ImageSVG type='dashboard' width={400} height={400} />;
 }
