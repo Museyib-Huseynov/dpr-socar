@@ -8,7 +8,7 @@ export async function GET() {
       ogpd o
     LEFT JOIN 
       fields f ON o.id = f.ogpd_id
-    LEFT JOIN
+    INNER JOIN
       complete_table ct ON f.name = ct.field;
   `;
 

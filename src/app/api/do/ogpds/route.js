@@ -2,7 +2,7 @@ import { getPool } from '@/util/db';
 
 export async function GET() {
   let query = `
-    SELECT
+    SELECT DISTINCT
       o.*
     FROM
       ogpd o

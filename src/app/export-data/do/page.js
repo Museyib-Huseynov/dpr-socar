@@ -5,6 +5,9 @@ import { useStaticData } from '@/context/StaticDataContext';
 import Select from '@/components/GroupSelect';
 import DatePicker from '@/components/DatePicker';
 import DeleteIcon from '@mui/icons-material/Delete';
+import dayjs from 'dayjs';
+import VirtualizedTable from '@/components/VirtualizedTable';
+import exportToExcel from '@/util/exportAsExcel';
 
 export default function DO() {
   const { doOGPDs } = useStaticData();
@@ -118,7 +121,19 @@ export default function DO() {
           </div>
         </div>
       </div>
-      <div></div>
+
+      <div className='overflow-auto'>
+        {loading ? (
+          <div className='h-full w-full flex items-center justify-center'>
+            <div className='animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent'></div>
+          </div>
+        ) : (
+          <div className='h-full w-max min-w-full'>
+            {/* <PaginatedTable data={downloadedData} /> */}
+            <VirtualizedTable data={downloadedData} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
