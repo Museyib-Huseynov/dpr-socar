@@ -1,5 +1,3 @@
-import LottieAnimation from '@/components/LottieAnimation';
-
 export default function CreateVisuals() {
-  return <LottieAnimation type='maintenance' />;
+  return <h1>Create Visuals</h1>;
 }

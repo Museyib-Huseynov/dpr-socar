@@ -1,5 +1,3 @@
-import LottieAnimation from '@/components/LottieAnimation';
-
 export default function MR() {
-  return <LottieAnimation type='maintenance' />;
+  return <h1>Monthly reported</h1>;
 }
