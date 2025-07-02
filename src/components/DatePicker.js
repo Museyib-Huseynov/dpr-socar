@@ -14,6 +14,8 @@ export default function MyDatePicker({
   data_type,
   data,
   disabled = false,
+  views = ['year', 'month', 'day'],
+  format = 'DD.MM.YYYY',
 }) {
   const [validDates, setValidDates] = useState([]);
 
@@ -48,6 +50,8 @@ export default function MyDatePicker({
           label={placeholder}
           value={value}
           onChange={(newValue) => setValue(newValue)}
+          views={views}
+          format={format}
           shouldDisableDate={shouldDisableDate}
           disabled={data.length === 0 || disabled}
           sx={{

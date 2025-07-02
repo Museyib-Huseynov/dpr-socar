@@ -1,3 +1,7 @@
+'use client';
+
+import { useStaticData } from '@/context/StaticDataContext';
+
 import ImageSVG from '@/components/ImageSVG';
 
 export default function MR() {

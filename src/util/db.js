@@ -10,7 +10,7 @@ export const getPool = async () => {
     password: '3231292',
     server: 'localhost',
     port: 1433,
-    database: 'dpr',
+    database: 'dpr_11',
     options: {
       encrypt: false,
       trustServerCertificate: true,

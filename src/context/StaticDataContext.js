@@ -9,6 +9,7 @@ export default function StaticDataProvider({ children }) {
   const [error, setError] = useState(false);
 
   const [dprOGPDs, setDprOGPDs] = useState([]);
+  const [mrOGPDs, setMrOGPDs] = useState([]);
   const [doOGPDs, setDoOGPDs] = useState([]);
   const [fields, setFields] = useState([]);
   const [platforms, setPlatforms] = useState([]);
@@ -18,23 +19,32 @@ export default function StaticDataProvider({ children }) {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [dprOGPDsRes, doOGPDsRes, fieldsRes, platformsRes, wellsRes] =
-          await Promise.all([
-            fetch('/api/dpr/ogpds'),
-            fetch('/api/do/ogpds'),
-            fetch('/api/fields'),
-            fetch('/api/platforms'),
-            fetch('/api/wells'),
-          ]);
+        const [
+          dprOGPDsRes,
+          mrOGPDsRes,
+          doOGPDsRes,
+          fieldsRes,
+          platformsRes,
+          wellsRes,
+        ] = await Promise.all([
+          fetch('/api/dpr/ogpds'),
+          fetch('/api/mr/ogpds'),
+          fetch('/api/do/ogpds'),
+          fetch('/api/fields'),
+          fetch('/api/platforms'),
+          fetch('/api/wells'),
+        ]);
 
         const [
           dprOGPDsData,
+          mrOGPDsData,
           doOGPDsData,
           fieldsData,
           platformsData,
           wellsData,
         ] = await Promise.all([
           dprOGPDsRes.json(),
+          mrOGPDsRes.json(),
           doOGPDsRes.json(),
           fieldsRes.json(),
           platformsRes.json(),
@@ -42,6 +52,7 @@ export default function StaticDataProvider({ children }) {
         ]);
 
         setDprOGPDs(dprOGPDsData);
+        setMrOGPDs(mrOGPDsData);
         setDoOGPDs(doOGPDsData);
         setFields(fieldsData);
         setPlatforms(platformsData);
