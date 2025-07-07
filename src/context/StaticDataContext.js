@@ -74,7 +74,7 @@ export default function StaticDataProvider({ children }) {
 
   return (
     <StaticDataContext.Provider
-      value={{ dprOGPDs, doOGPDs, fields, platforms, wells }}
+      value={{ dprOGPDs, mrOGPDs, doOGPDs, fields, platforms, wells }}
     >
       {loading ? (
         <div className='h-full w-full flex items-center justify-center'>
