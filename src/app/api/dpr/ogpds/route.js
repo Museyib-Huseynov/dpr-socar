@@ -1,4 +1,4 @@
-import { getPool } from '@/util/db';
+import { getClient } from '@/util/db';
 
 export async function GET() {
   let query = `
@@ -13,10 +13,10 @@ export async function GET() {
   `;
 
   try {
-    const pool = await getPool();
-    const result = await pool.request().query(query);
+    const client = await getClient();
+    const result = await client.query(query);
 
-    return Response.json(result.recordset);
+    return Response.json(result.rows);
   } catch (error) {
     console.error('Database error:', error);
     return new Response(JSON.stringify({ error: 'Database query failed' }), {

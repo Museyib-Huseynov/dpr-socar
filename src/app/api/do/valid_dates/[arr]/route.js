@@ -1,11 +1,11 @@
-import { getPool } from '@/util/db';
+import { getClient } from '@/util/db';
 
 export async function GET(request, { params }) {
   const { arr } = await params;
 
   try {
-    const pool = await getPool();
-    const result = await pool.request().query(
+    const client = await getClient();
+    const result = await client.query(
       `
         SELECT 
           rd.report_date 
@@ -18,7 +18,7 @@ export async function GET(request, { params }) {
       `
     );
 
-    return Response.json(result.recordset);
+    return Response.json(result.rows);
   } catch (error) {
     console.error('Database error:', error);
     return new Response(JSON.stringify({ error: 'Database query failed' }), {

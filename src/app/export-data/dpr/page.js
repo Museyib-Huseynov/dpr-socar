@@ -11,6 +11,7 @@ import { useStaticData } from '@/context/StaticDataContext';
 
 export default function DPR() {
   const { dprOGPDs, fields, platforms, wells } = useStaticData();
+
   const [dataToDownload, _] = useState([
     { id: 1, name: 'Kateqoriya', group: 'Quyu fondu' },
     { id: 2, name: 'İstismar fond alt kat', group: 'Quyu fondu' },
@@ -75,11 +76,11 @@ export default function DPR() {
   const [loading, setLoading] = useState(false);
 
   const filteredFields = fields.filter((i) => {
-    return i.ogpd_id === selectedOGPD;
+    return i.ogpd_id === +selectedOGPD;
   });
 
   const filteredPlatforms = platforms.filter((i) => {
-    return selectedField === i.field_id;
+    return +selectedField === i.field_id;
   });
 
   const sortedPlatforms = useMemo(() => {
@@ -96,7 +97,7 @@ export default function DPR() {
   }, [filteredPlatforms]);
 
   const filteredWells = wells.filter((i) => {
-    return selectedPlatforms.includes(i.platform_id);
+    return selectedPlatforms.includes(String(i.platform_id));
   });
 
   const sortedWells = useMemo(() => {

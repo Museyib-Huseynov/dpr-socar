@@ -1,11 +1,11 @@
-import { getPool } from '@/util/db';
+import { getClient } from '@/util/db';
 
 export async function GET(request, { params }) {
   let { ogpd_id, fromDate, toDate } = await params;
 
   let query = `
     SELECT 
-      CONVERT(VARCHAR(10), rd.report_date, 120) AS "Tarix",
+      TO_CHAR(rd.report_date, 'YYYY-MM-DD') AS "Tarix",
       o.name AS "Yataq",
       do.produced_oil_planned AS "Neft Hasilatı Plan (ton)",
       do.produced_oil_fact AS "Neft Hasilatı Fakt (ton)",
@@ -42,10 +42,10 @@ export async function GET(request, { params }) {
   console.log(query);
 
   try {
-    const pool = await getPool();
-    const result = await pool.request().query(query);
+    const client = await getClient();
+    const result = await client.query(query);
 
-    return Response.json(result.recordset);
+    return Response.json(result.rows);
   } catch (error) {
     console.error('Database error:', error);
     return new Response(JSON.stringify({ error: 'Database query failed' }), {

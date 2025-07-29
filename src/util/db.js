@@ -1,27 +1,23 @@
-import mssql from 'mssql';
+import pg from 'pg';
+const { Pool } = pg;
 
-let pool = null;
+let client = null;
 
-export const getPool = async () => {
-  if (pool) return pool;
+export const getClient = async () => {
+  if (client) return client;
 
-  const config = {
-    user: 'museyib',
-    password: '3231292',
-    server: 'localhost',
-    port: 1433,
-    database: 'dpr_11',
-    options: {
-      encrypt: false,
-      trustServerCertificate: true,
-    },
-    requestTimeout: 60000, // 60 seconds for queries
-    connectionTimeout: 30000, // 30 seconds to connect
-  };
+  let pool = new Pool({
+    host: process.env.NEXT_DB_HOST,
+    port: Number(process.env.NEXT_DB_PORT),
+    database: process.env.NEXT_DB_NAME,
+    user: process.env.NEXT_DB_USER,
+    password: process.env.NEXT_DB_PASSWORD,
+    ssl: false,
+  });
 
   try {
-    pool = await mssql.connect(config);
-    return pool;
+    client = await pool.connect();
+    return client;
   } catch (error) {
     console.error('Database connection failed:', error);
     throw error;
